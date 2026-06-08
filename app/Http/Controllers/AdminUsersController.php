@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
+use App\Models\Role;
+use App\Http\Requests\UsersRequest;
 
 class AdminUsersController extends Controller
 {
@@ -13,7 +16,9 @@ class AdminUsersController extends Controller
     {
         //
 
-        return view('admin.users.index');
+        $users = User::all();
+
+        return view('admin.users.index', compact('users'));
 
     }
 
@@ -24,15 +29,36 @@ class AdminUsersController extends Controller
     {
         //
 
-        return view('admin.users.create');
+        $roles = Role::pluck('name', 'id')->all();
+
+        return view('admin.users.create', compact('roles'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(UsersRequest $request)
     {
         //
+
+        $input = $request->all();
+
+        if ($file = $request->file('photo_id')) {
+
+            $name = time() . $file->getClientOriginalName();
+
+            $file->move('images', $name);
+
+            $photo = Photo::create(['file' => $name]);
+            
+            $input['photo_id'] = $photo->id;
+
+
+        }
+
+        // return redirect('/admin/users');
+
+        // return $request->all();
     }
 
     /**
