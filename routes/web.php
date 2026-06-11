@@ -22,22 +22,45 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Admin routes
+// Main Admin routes group (Combined auth AND your custom admin middleware here)
 Route::prefix('admin')
     ->name('admin.')
-    ->middleware(['auth'])
+    ->middleware(['auth', 'admin'])
     ->group(function () {
 
         Route::get('/', function () {
             return view('admin.index');
         })->name('index');
 
+        // 1. Fully Implemented Sections
         Route::resource('users', AdminUsersController::class);
-        Route::resource('posts', AdminPostsController::class);
-        Route::resource('categories', AdminCategoriesController::class);
-        Route::resource('medias', AdminMediasController::class);
-        Route::resource('comments', AdminCommentsController::class);
 
+        Route::resource('posts', AdminPostsController::class);
+
+        // 2. Uncreated Sections (Temporary Fallbacks - Built to prevent 500 naming crashes)
+
+        // ── CATEGORIES FALLBACKS ──
+        Route::get('/categories', function () {
+            return view('errors.404');
+        })->name('categories.index');
+
+        Route::get('/categories/create', function () {
+            return view('errors.404');
+        })->name('categories.create');
+
+        // ── MEDIA FALLBACKS ──
+        Route::get('/medias', function () {
+            return view('errors.404');
+        })->name('medias.index');
+
+        Route::get('/medias/create', function () {
+            return view('errors.404');
+        })->name('medias.create');
+
+        // ── COMMENTS FALLBACKS ──
+        Route::get('/comments', function () {
+            return view('errors.404');
+        })->name('comments.index');
     });
 
 require __DIR__.'/auth.php';

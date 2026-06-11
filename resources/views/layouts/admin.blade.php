@@ -8,16 +8,10 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    
-
     <title>Admin</title>
 
-    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-    <!-- Font Awesome 6 -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
     <style>
@@ -37,6 +31,7 @@
             background-color: #1a1f2e;
             flex-shrink: 0;
             transition: width 0.2s;
+            overflow: hidden; /* Added to hide text cleanly when toggled */
         }
 
         .sidebar-brand {
@@ -199,23 +194,18 @@
             border-radius: .5rem;
         }
     </style>
+    @yield('styles')
 </head>
 
 <body id="admin-page">
 
 <div id="wrapper">
 
-    <!-- ════════════════════════════════
-         SIDEBAR
-    ════════════════════════════════ -->
     <div id="sidebar-wrapper">
-
-        <!-- Brand -->
         <a class="sidebar-brand" href="{{ route('admin.index') }}">
             <i class="fas fa-layer-group"></i> Laravel Admin
         </a>
 
-        <!-- Search -->
         <div class="sidebar-search">
             <div class="input-group">
                 <input type="text" class="form-control" placeholder="Search...">
@@ -225,7 +215,6 @@
             </div>
         </div>
 
-        <!-- Nav -->
         <nav>
             <div class="sidebar-section-label">Main</div>
 
@@ -234,16 +223,13 @@
                 <i class="fas fa-gauge-high"></i> Dashboard
             </a>
 
-            <!-- Users -->
             <div class="sidebar-section-label">Management</div>
 
             <div class="sidebar-parent"
                  data-bs-toggle="collapse"
                  data-bs-target="#menu-users"
                  aria-expanded="{{ Request::is('admin/users*') ? 'true' : 'false' }}">
-                <i class="fas fa-users"></i>
-                Users
-                <i class="fas fa-chevron-down"></i>
+                <i class="fas fa-users"></i> Users <i class="fas fa-chevron-down"></i>
             </div>
             <div class="collapse sidebar-submenu {{ Request::is('admin/users*') ? 'show' : '' }}"
                  id="menu-users">
@@ -255,14 +241,11 @@
                 </a>
             </div>
 
-            <!-- Posts -->
             <div class="sidebar-parent"
                  data-bs-toggle="collapse"
                  data-bs-target="#menu-posts"
                  aria-expanded="{{ Request::is('admin/posts*') ? 'true' : 'false' }}">
-                <i class="fas fa-newspaper"></i>
-                Posts
-                <i class="fas fa-chevron-down"></i>
+                <i class="fas fa-newspaper"></i> Posts <i class="fas fa-chevron-down"></i>
             </div>
             <div class="collapse sidebar-submenu {{ Request::is('admin/posts*') ? 'show' : '' }}"
                  id="menu-posts">
@@ -277,14 +260,11 @@
                 </a>
             </div>
 
-            <!-- Categories -->
             <div class="sidebar-parent"
                  data-bs-toggle="collapse"
                  data-bs-target="#menu-categories"
                  aria-expanded="{{ Request::is('admin/categories*') ? 'true' : 'false' }}">
-                <i class="fas fa-tags"></i>
-                Categories
-                <i class="fas fa-chevron-down"></i>
+                <i class="fas fa-tags"></i> Categories <i class="fas fa-chevron-down"></i>
             </div>
             <div class="collapse sidebar-submenu {{ Request::is('admin/categories*') ? 'show' : '' }}"
                  id="menu-categories">
@@ -296,14 +276,11 @@
                 </a>
             </div>
 
-            <!-- Media -->
             <div class="sidebar-parent"
                  data-bs-toggle="collapse"
                  data-bs-target="#menu-media"
                  aria-expanded="{{ Request::is('admin/medias*') ? 'true' : 'false' }}">
-                <i class="fas fa-photo-film"></i>
-                Media
-                <i class="fas fa-chevron-down"></i>
+                <i class="fas fa-photo-film"></i> Media <i class="fas fa-chevron-down"></i>
             </div>
             <div class="collapse sidebar-submenu {{ Request::is('admin/medias*') ? 'show' : '' }}"
                  id="menu-media">
@@ -314,18 +291,11 @@
                     <i class="fas fa-upload"></i> Upload Media
                 </a>
             </div>
-
         </nav>
     </div>
-    <!-- /#sidebar-wrapper -->
 
-
-    <!-- ════════════════════════════════
-         MAIN CONTENT AREA
-    ════════════════════════════════ -->
     <div id="page-wrapper">
 
-        <!-- Top Navbar -->
         <div id="top-navbar">
             <button class="toggle-sidebar-btn" id="sidebarToggle">
                 <i class="fas fa-bars"></i>
@@ -333,62 +303,66 @@
 
             <div class="d-flex align-items-center gap-3">
 
-                <!-- User dropdown -->
                 <div class="dropdown">
                     <a href="#"
                        class="d-flex align-items-center gap-2 text-decoration-none text-dark dropdown-toggle"
                        data-bs-toggle="dropdown">
                         <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center text-white"
                              style="width:32px;height:32px;font-size:.8rem;">
-                            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                            {{ Auth::check() && !empty(Auth::user()->name) ? strtoupper(substr(Auth::user()->name, 0, 1)) : 'A' }}
                         </div>
-                        <span class="d-none d-sm-inline small fw-medium">{{ Auth::user()->name }}</span>
+                        <span class="d-none d-sm-inline small fw-medium">
+                            {{ Auth::check() && isset(Auth::user()->name) ? Auth::user()->name : 'Admin User' }}
+                        </span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li>
-                            <a class="dropdown-item" href="/home">
-                                <i class="fas fa-user fa-fw me-2 text-muted"></i> User Profile
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="#">
-                                <i class="fas fa-gear fa-fw me-2 text-muted"></i> Settings
-                            </a>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item text-danger" href="{{ route('logout') }}"
-                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                <i class="fas fa-right-from-bracket fa-fw me-2"></i> Logout
-                            </a>
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                @csrf
-                            </form>
-                        </li>
+                        @if(Auth::check())
+                            <li>
+                                <a class="dropdown-item" href="/home">
+                                    <i class="fas fa-user fa-fw me-2 text-muted"></i> User Profile
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-gear fa-fw me-2 text-muted"></i> Settings
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="{{ route('logout') }}"
+                                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                    <i class="fas fa-right-from-bracket fa-fw me-2"></i> Logout
+                                </a>
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                    @csrf
+                                </form>
+                            </li>
+                        @else
+                            <li>
+                                <a class="dropdown-item" href="{{ route('login') }}">
+                                    <i class="fas fa-right-to-bracket fa-fw me-2 text-muted"></i> Log In
+                                </a>
+                            </li>
+                        @endif
                     </ul>
                 </div>
 
             </div>
         </div>
-        <!-- /#top-navbar -->
 
-        <!-- Page Content -->
         <div class="content-area">
             @yield('content')
         </div>
 
     </div>
-    <!-- /#page-wrapper -->
-
 </div>
-<!-- /#wrapper -->
 
+@vite(['resources/js/app.js'])
 
-<!-- Bootstrap 5 JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    // Sidebar toggle
+    // Sidebar toggle wrapper script
     document.getElementById('sidebarToggle').addEventListener('click', function () {
         const sidebar = document.getElementById('sidebar-wrapper');
         if (sidebar.style.width === '0px' || sidebar.style.width === '') {
@@ -402,6 +376,5 @@
 
 @yield('footer')
 @yield('scripts')
-@vite(['resources/js/app.js'])
 </body>
 </html>

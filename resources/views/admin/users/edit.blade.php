@@ -2,11 +2,11 @@
 
 @section('content')
 
-    <h1>Edit User</h1>
+    <h1 class="mb-4">Edit User</h1>
 
     <div class="row align-items-start">
 
-        <div class="col-sm-2">
+        <div class="col-sm-2 mb-3">
             <img src="{{ $user->photo ? $user->photo->file : 'https://placehold.co/400x400' }}" alt="User Photo" class="img-fluid img-thumbnail w-100">
         </div>
 
@@ -76,7 +76,7 @@
                     >
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-4">
                     <label for="password" class="form-label fw-bold">Password:</label>
                     <div class="input-group">
                         <input
@@ -91,12 +91,23 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary">
-                    Update User
-                </button>
-
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary flex-fill">
+                        <i class="fas fa-save me-2"></i>Update User
+                    </button>
             </form>
-        </div>
+
+            <form method="POST"
+                action="{{ route('admin.users.destroy', $user->id) }}"
+                class="flex-fill"
+                onsubmit="return confirm('Are you sure you want to permanently delete this user?');">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-danger w-100">
+                    <i class="fas fa-trash-can me-2"></i>Delete User
+                </button>
+            </form>
+                </div> </div>
 
     </div>
 

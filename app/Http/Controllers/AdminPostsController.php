@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Post; // <-- CRITICAL: This imports your Post model
 
 class AdminPostsController extends Controller
 {
@@ -11,7 +12,11 @@ class AdminPostsController extends Controller
      */
     public function index()
     {
-        //
+        // 1. Fetch all posts from your database table
+        $posts = Post::all();
+
+        // 2. Pass the $posts variable to resources/views/admin/posts/index.blade.php
+        return view('admin.posts.index', compact('posts'));
     }
 
     /**
@@ -19,7 +24,8 @@ class AdminPostsController extends Controller
      */
     public function create()
     {
-        //
+        // 3. Fixes the blank page by returning the actual create form view
+        return view('admin.posts.create');
     }
 
     /**
@@ -27,7 +33,7 @@ class AdminPostsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Will handle form submissions later
     }
 
     /**
@@ -43,7 +49,7 @@ class AdminPostsController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        return view('admin.posts.edit');
     }
 
     /**
