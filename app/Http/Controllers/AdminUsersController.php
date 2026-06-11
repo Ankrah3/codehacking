@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Role;
 use App\Models\Photo;
 use App\Http\Requests\UsersRequest;
+use App\Http\Requests\UsersEditRequest;
 
 class AdminUsersController extends Controller
 {
@@ -42,7 +43,18 @@ class AdminUsersController extends Controller
     {
         //
 
-        $input = $request->all();
+        if (trim($request->password) == '') {
+
+            $input = $request->except('password');
+
+        } else {
+
+            $input = $request->all();
+
+
+        }
+
+
 
         if ($file = $request->file('photo_id')) {
 
@@ -58,12 +70,13 @@ class AdminUsersController extends Controller
         }
 
 
+
         $input['password'] = bcrypt($request->password);
 
         User::create($input);
 
 
-        // return redirect('/admin/users');
+        return redirect('/admin/users');
 
         // return $request->all();
     }
@@ -85,15 +98,53 @@ class AdminUsersController extends Controller
     {
         //
 
-        return view('admin.users.edit');
+        $user = User::findOrFail($id);
+
+        $roles = Role::pluck('name', 'id')->all();
+
+        return view('admin.users.edit', compact('user', 'roles'));
+
+
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UsersEditRequest $request, string $id)
     {
         //
+
+        $user = User::findOrFail($id);
+
+        // Explicitly check if a password was actually typed in
+        if (trim($request->password) == '') {
+
+            $input = $request->except('password');
+
+        } else {
+
+            $input = $request->all();
+
+        }
+
+        // Handle photo upload if a new file is chosen
+        if ($file = $request->file('photo_id')) {
+            $name = time() . $file->getClientOriginalName();
+            $file->move('images', $name);
+            $photo = Photo::create(['file' => $name]);
+            $input['photo_id'] = $photo->id;
+        }
+
+
+        $input['password'] = bcrypt($request->password);
+
+        // Now Eloquent will only update fields that exist inside $input
+        $user->update($input);
+
+        return redirect('/admin/users');
+
+
+
     }
 
     /**

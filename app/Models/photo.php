@@ -4,11 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class photo extends Model
+class Photo extends Model
 {
     //
 
+
+
     protected $fillable = ['file'];
+
+
+    public function getFileAttribute($value)
+    {
+        return '/images/' . $value;
+    }
 
 
 
