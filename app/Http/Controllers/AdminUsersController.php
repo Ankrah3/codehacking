@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UsersEditRequest;
-use App\Http\Requests\UsersRequest;
+use App\Http\Requests\UsersCreateRequest;
 use App\Models\Photo;
 use App\Models\Role;
 use App\Models\User;
@@ -33,7 +33,7 @@ class AdminUsersController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(UsersRequest $request)
+    public function store(UsersCreateRequest $request)
     {
         // 1. Capture request values safely
         if (trim($request->password) == '') {

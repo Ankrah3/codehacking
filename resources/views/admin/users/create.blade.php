@@ -6,7 +6,8 @@
 
     <div class="row">
         <div class="col-sm-10">
-            <form method="POST" action="{{ route('admin.users.store') }}" enctype="multipart/form-data">
+            {{-- Added novalidate so Laravel's form_error template can actually display --}}
+            <form method="POST" action="{{ route('admin.users.store') }}" enctype="multipart/form-data" novalidate>
                 @csrf
 
                 <div class="mb-3">
@@ -82,6 +83,9 @@
         </div>
     </div>
 
-    @include('includes.form_error')
+    <div class="row">
+        @include('includes.form_error')
+    </div>
+    
 
 @stop
