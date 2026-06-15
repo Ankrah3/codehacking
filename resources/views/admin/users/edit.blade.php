@@ -107,9 +107,9 @@
                     <i class="fas fa-trash-can me-2"></i>Delete User
                 </button>
             </form>
-                </div> </div>
-
+        </div> 
     </div>
+</div>
 
 @include('includes.form_error')
 

@@ -12,7 +12,7 @@ return new class () extends Migration {
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
-            $table->integer('user_id')->unsigned()->index()->nullable();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->integer('category_id')->unsigned()->index()->nullable();
             $table->integer('photo_id')->unsigned()->index()->nullable();
             $table->string('title');

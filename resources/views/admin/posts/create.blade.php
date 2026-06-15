@@ -7,6 +7,7 @@
 
         <form method="POST" action="{{ route('admin.posts.store') }}" enctype="multipart/form-data">
             @csrf
+            
 
             {{-- Title Field --}}
             <div class="form-group fw-bold mb-3">
@@ -15,14 +16,13 @@
             </div>
 
             {{-- Category Dropdown --}}
-            <div class="form-group fw-bold mb-3">
-    <label for="category_id">Category:</label>
-    <select name="category_id" id="category_id" class="form-control">
-        <option value="">Choose Options</option>
-        <option value="1">PHP</option>
-        <option value="2">JavaScript</option>
-    </select>
-</div>
+            <select name="category_id" id="category_id" class="form-control">
+    <option value="">Choose Categories</option>
+
+    @foreach($categories as $id => $name)
+        <option value="{{ $id }}">{{ $name }}</option>
+    @endforeach
+</select>
 
             {{-- Photo Upload Field --}}
             <div class="mb-3">

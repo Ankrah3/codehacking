@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Role;
 use App\Models\Photo;
+use App\Models\Post;
 
 class User extends Authenticatable
 {
@@ -28,7 +28,6 @@ class User extends Authenticatable
         'role_id',
         'photo_id',
         'is_active',
-
     ];
 
     /**
@@ -64,23 +63,18 @@ class User extends Authenticatable
         return $this->belongsTo(Photo::class);
     }
 
-
     public function posts()
     {
-
         return $this->hasMany(Post::class);
-
     }
 
     public function isAdmin()
     {
-        if ($this->role->name == 'administrator' && $this->is_active == 1) {
-
+        // Added '?->' safe operator to catch null roles smoothly
+        if ($this->role?->name == 'administrator' && $this->is_active == 1) {
             return true;
         }
 
         return false;
-
     }
-
 }

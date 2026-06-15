@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PostsCreateRequest;
+use App\Models\Category;
 use App\Models\Photo;
-use App\Models\Post; // <-- CRITICAL: This imports your Post model
+use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class AdminPostsController extends Controller
 {
@@ -15,10 +17,7 @@ class AdminPostsController extends Controller
      */
     public function index()
     {
-        // 1. Fetch all posts from your database table
         $posts = Post::all();
-
-        // 2. Pass the $posts variable to resources/views/admin/posts/index.blade.php
         return view('admin.posts.index', compact('posts'));
     }
 
@@ -27,8 +26,10 @@ class AdminPostsController extends Controller
      */
     public function create()
     {
-        // 3. Fixes the blank page by returning the actual create form view
-        return view('admin.posts.create');
+        // FIX 2: Swapped out obsolete lists() method for pluck()
+        $categories = Category::pluck('name', 'id')->all();
+
+        return view('admin.posts.create', compact('categories'));
     }
 
     /**
@@ -36,29 +37,20 @@ class AdminPostsController extends Controller
      */
     public function store(PostsCreateRequest $request)
     {
-        // Will handle form submissions later
-
         $input = $request->all();
-
         $user = Auth::user();
 
         if ($file = $request->file('photo_id')) {
-
             $name = time() . $file->getClientOriginalName();
-
             $file->move('images', $name);
 
             $photo = Photo::create(['file' => $name]);
-
             $input['photo_id'] = $photo->id;
-
-
         }
 
         $user->posts()->create($input);
 
         return redirect('/admin/posts');
-
     }
 
     /**
@@ -74,7 +66,12 @@ class AdminPostsController extends Controller
      */
     public function edit(string $id)
     {
-        return view('admin.posts.edit');
+
+        $post = Post::findOrFail($id);
+
+        $categories = Category::pluck('name', 'id')->all();
+
+        return view('admin.posts.edit', compact('post', 'categories'));
     }
 
     /**
@@ -83,6 +80,23 @@ class AdminPostsController extends Controller
     public function update(Request $request, string $id)
     {
         //
+
+        $input = $request->all();
+
+        if ($file = $request->file('photo_id')) {
+            $name = time() . $file->getClientOriginalName();
+
+            $file->move('images', $name);
+
+            $photo = Photo::create(['file' => $name]);
+
+            $input['photo_id'] = $photo->id;
+        }
+
+        Auth::user()->posts()->whereId($id)->first()->update($input);
+
+        return redirect('/admin/posts');
+
     }
 
     /**
@@ -91,5 +105,16 @@ class AdminPostsController extends Controller
     public function destroy(string $id)
     {
         //
+
+        $post = Post::findOrFail($id);
+
+        unlink(public_path() . $post->photo->file);
+
+        $post->delete();
+
+        Session::flash('deleted_post', 'The post has been deleted');
+
+        return redirect('/admin/posts');
+
     }
 }

@@ -26,10 +26,10 @@
             <tr>
                 <td>{{ $post->id }}</td>
                 <td><img height="50" src="{{ $post->photo ? $post->photo->file : 'http://placehold.co/100x100'}}" alt=""></td>
-                <td>{{ $post->user->name }}</td>
-                <td>{{ $post->category_id }}</td>
+                <td><a href="{{ route('admin.posts.edit', $post->id) }}"> {{ $post->user->name }}</a></td>
+                <td>{{ $post->category ? $post->category->name : 'Uncategorised'}}</td>
                 <td>{{ $post->title }}</td>
-                <td>{{ $post->body }}</td>
+                <td>{{ str($post->body)->limit(30) }}</td>
                 <td>{{ $post->created_at->diffForhumans() }}</td>
                 <td>{{ $post->updated_at->diffForhumans() }}</td>
             </tr>
