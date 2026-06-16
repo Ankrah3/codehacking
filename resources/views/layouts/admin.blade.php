@@ -203,7 +203,7 @@
 
     <div id="sidebar-wrapper">
         <a class="sidebar-brand" href="{{ route('admin.index') }}">
-            <i class="fas fa-layer-group"></i> Laravel Admin
+            <i class="fas fa-layer-group"></i> CodeHacking
         </a>
 
         <div class="sidebar-search">

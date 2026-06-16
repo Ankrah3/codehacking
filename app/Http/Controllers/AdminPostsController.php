@@ -17,7 +17,9 @@ class AdminPostsController extends Controller
      */
     public function index()
     {
-        $posts = Post::all();
+        // Optimization: Eager load relations to prevent N+1 memory issues in your table view
+        $posts = Post::with(['user', 'category', 'photo'])->get();
+
         return view('admin.posts.index', compact('posts'));
     }
 
@@ -26,9 +28,7 @@ class AdminPostsController extends Controller
      */
     public function create()
     {
-        // FIX 2: Swapped out obsolete lists() method for pluck()
         $categories = Category::pluck('name', 'id')->all();
-
         return view('admin.posts.create', compact('categories'));
     }
 
@@ -41,8 +41,10 @@ class AdminPostsController extends Controller
         $user = Auth::user();
 
         if ($file = $request->file('photo_id')) {
-            $name = time() . $file->getClientOriginalName();
-            $file->move('images', $name);
+            $name = time() . '_' . $file->getClientOriginalName();
+
+            // FIX: Wrap the destination directory inside the public_path helper!
+            $file->move(public_path('images'), $name);
 
             $photo = Photo::create(['file' => $name]);
             $input['photo_id'] = $photo->id;
@@ -50,7 +52,7 @@ class AdminPostsController extends Controller
 
         $user->posts()->create($input);
 
-        return redirect('/admin/posts');
+        return redirect()->route('admin.posts.index')->with('success', 'Post created successfully!');
     }
 
     /**
@@ -61,14 +63,21 @@ class AdminPostsController extends Controller
         //
     }
 
+    public function post($id)
+    {
+        // Find the specific post or fail with a 404 screen if the ID doesn't exist
+        $post = Post::findOrFail($id);
+
+        // Load the fresh post.blade.php view file we created, injecting our $post variable
+        return view('post', compact('post'));
+    }
+
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(string $id)
     {
-
         $post = Post::findOrFail($id);
-
         $categories = Category::pluck('name', 'id')->all();
 
         return view('admin.posts.edit', compact('post', 'categories'));
@@ -79,24 +88,31 @@ class AdminPostsController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
-
+        // Find the post globally, regardless of who originally authored it
+        $post = Post::findOrFail($id);
         $input = $request->all();
 
         if ($file = $request->file('photo_id')) {
-            $name = time() . $file->getClientOriginalName();
+            $name = time() . '_' . $file->getClientOriginalName();
 
-            $file->move('images', $name);
+            // FIX: Wrap the destination directory inside the public_path helper!
+            $file->move(public_path('images'), $name);
 
             $photo = Photo::create(['file' => $name]);
-
             $input['photo_id'] = $photo->id;
+
+            if ($post->photo) {
+                $oldFile = public_path('images/' . $post->photo->file);
+                if (file_exists($oldFile)) {
+                    unlink($oldFile);
+                }
+            }
         }
 
-        Auth::user()->posts()->whereId($id)->first()->update($input);
+        // FIX: Update directly against the post object
+        $post->update($input);
 
-        return redirect('/admin/posts');
-
+        return redirect()->route('admin.posts.index')->with('success', 'Post updated successfully!');
     }
 
     /**
@@ -104,17 +120,20 @@ class AdminPostsController extends Controller
      */
     public function destroy(string $id)
     {
-        //
-
         $post = Post::findOrFail($id);
 
-        unlink(public_path() . $post->photo->file);
+        // FIX: Safe directory path concatenation for unlinking files
+        if ($post->photo) {
+            $filePath = public_path('images/' . $post->photo->file);
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+        }
 
         $post->delete();
 
         Session::flash('deleted_post', 'The post has been deleted');
 
-        return redirect('/admin/posts');
-
+        return redirect()->route('admin.posts.index');
     }
 }
