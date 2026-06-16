@@ -12,8 +12,6 @@ class AdminCategoriesController extends Controller
      */
     public function index()
     {
-        //
-
         $categories = Category::all();
 
         return view('admin.categories.index', compact('categories'));
@@ -24,9 +22,8 @@ class AdminCategoriesController extends Controller
      */
     public function create()
     {
-        //
-
-        // return view('admin.categories.create');
+        // FIX 1: Uncomment this line so the page stops rendering as completely blank!
+        return view('admin.categories.create');
     }
 
     /**
@@ -34,12 +31,16 @@ class AdminCategoriesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Validate that the name field was filled out
+        $request->validate([
+            'name' => 'required|string|max:255|unique:categories,name'
+        ]);
 
+        // FIX 2: Create and save the new category into your database table
         Category::create($request->all());
 
-        return redirect('/admin/categories');
-
+        // FIX 3: Redirect back to your main category list table view
+        return redirect()->route('admin.categories.index');
     }
 
     /**
@@ -55,7 +56,6 @@ class AdminCategoriesController extends Controller
      */
     public function edit(string $id)
     {
-        //
         $category = Category::findOrFail($id);
 
         return view('admin.categories.edit', compact('category'));
@@ -66,13 +66,11 @@ class AdminCategoriesController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
         $category = Category::findOrFail($id);
 
         $category->update($request->all());
 
         return redirect('/admin/categories');
-
     }
 
     /**
@@ -80,7 +78,6 @@ class AdminCategoriesController extends Controller
      */
     public function destroy(string $id)
     {
-        //
         Category::findOrFail($id)->delete();
 
         return redirect('/admin/categories');
