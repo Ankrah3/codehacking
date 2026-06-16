@@ -6,14 +6,15 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Id</th>
-                <th>Photo</th>
-                <th>Owner</th>
-                <th>Category</th>    
-                <th>Title</th>
-                <th>Body</th>
-                <th>Created</th>
-                <th>Updated</th>
+                <th scope="col">Id</th>
+                <th scope="col">Photo</th>
+                <th scope="col">Photo</th>
+                <th scope="col">Owner</th>
+                <th scope="col">Category</th>    
+                <th scope="col">Title</th>
+                <th scope="col">Body</th>
+                <th scope="col">Created</th>
+                <th scope="col">Updated</th>
             </tr>
         </thead>
         <tbody>

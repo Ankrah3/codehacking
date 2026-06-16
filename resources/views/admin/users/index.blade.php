@@ -13,14 +13,14 @@
     <table class='table'>
         <thead>
             <tr>
-                <th>Id</th>
-                <th>Photo</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th>Created</th>
-                <th>Updated</th>
+                <th scope="col">Id</th>
+                <th scope="col">Photo</th>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Role</th>
+                <th scope="col">Status</th>
+                <th scope="col">Created</th>
+                <th scope="col">Updated</th>
             </tr>
         </thead>
         <tbody>

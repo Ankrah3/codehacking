@@ -37,30 +37,23 @@ Route::prefix('admin')
 
         Route::resource('posts', AdminPostsController::class);
 
-        // 2. Uncreated Sections (Temporary Fallbacks - Built to prevent 500 naming crashes)
+        Route::resource('categories', AdminCategoriesController::class);
 
-        // ── CATEGORIES FALLBACKS ──
-        Route::get('/categories', function () {
-            return view('errors.404');
-        })->name('categories.index');
-
-        Route::get('/categories/create', function () {
-            return view('errors.404');
-        })->name('categories.create');
-
-        // ── MEDIA FALLBACKS ──
-        Route::get('/medias', function () {
-            return view('errors.404');
-        })->name('medias.index');
-
-        Route::get('/medias/create', function () {
-            return view('errors.404');
-        })->name('medias.create');
-
-        // ── COMMENTS FALLBACKS ──
-        Route::get('/comments', function () {
-            return view('errors.404');
+        // 2. Comments Section Placeholder
+        Route::get('comments', function () {
+            return 'Comments Section Coming Soon!';
         })->name('comments.index');
+
+        // 3. Media Section Fix (Since you have the controller imported, map it here)
+        Route::resource('medias', AdminMediasController::class);
+
+        /* NOTE: If your AdminMediasController doesn't have its methods built yet,
+           you can comment out the resource route above and use these temporary placeholders instead:
+
+           Route::get('medias', function () { return 'Media Index Coming Soon!'; })->name('medias.index');
+           Route::get('medias/create', function () { return 'Media Upload Coming Soon!'; })->name('medias.create');
+        */
+
     });
 
 require __DIR__.'/auth.php';
