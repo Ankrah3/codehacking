@@ -31,7 +31,7 @@
             background-color: #1a1f2e;
             flex-shrink: 0;
             transition: width 0.2s;
-            overflow: hidden; /* Added to hide text cleanly when toggled */
+            overflow: hidden;
         }
 
         .sidebar-brand {
@@ -143,6 +143,11 @@
 
         .sidebar-submenu {
             background: rgba(0,0,0,0.15);
+            display: none; /* Hide by default, let class handles toggle */
+        }
+
+        .sidebar-submenu.show {
+            display: block; /* Show cleanly when toggled active */
         }
 
         .sidebar-submenu .nav-link {
@@ -225,14 +230,13 @@
 
             <div class="sidebar-section-label">Management</div>
 
-            <div class="sidebar-parent"
-                 data-bs-toggle="collapse"
-                 data-bs-target="#menu-users"
-                 aria-expanded="{{ Request::is('admin/users*') ? 'true' : 'false' }}">
+            {{-- 1. Users Dropdown Trigger (Removed data-bs-toggle to prevent double event firing) --}}
+            <button class="sidebar-parent w-100 border-0 bg-transparent text-start"
+                    data-target="#menu-users"
+                    aria-expanded="{{ Request::is('admin/users*') ? 'true' : 'false' }}">
                 <i class="fas fa-users"></i> Users <i class="fas fa-chevron-down"></i>
-            </div>
-            <div class="collapse sidebar-submenu {{ Request::is('admin/users*') ? 'show' : '' }}"
-                 id="menu-users">
+            </button>
+            <div class="sidebar-submenu {{ Request::is('admin/users*') ? 'show' : '' }}" id="menu-users">
                 <a class="nav-link" href="{{ route('admin.users.index') }}">
                     <i class="fas fa-list"></i> All Users
                 </a>
@@ -241,14 +245,13 @@
                 </a>
             </div>
 
-            <div class="sidebar-parent"
-                 data-bs-toggle="collapse"
-                 data-bs-target="#menu-posts"
-                 aria-expanded="{{ Request::is('admin/posts*') ? 'true' : 'false' }}">
+            {{-- 2. Posts Dropdown Trigger --}}
+            <button class="sidebar-parent w-100 border-0 bg-transparent text-start"
+                    data-target="#menu-posts"
+                    aria-expanded="{{ Request::is('admin/posts*') ? 'true' : 'false' }}">
                 <i class="fas fa-newspaper"></i> Posts <i class="fas fa-chevron-down"></i>
-            </div>
-            <div class="collapse sidebar-submenu {{ Request::is('admin/posts*') ? 'show' : '' }}"
-                 id="menu-posts">
+            </button>
+            <div class="sidebar-submenu {{ Request::is('admin/posts*') ? 'show' : '' }}" id="menu-posts">
                 <a class="nav-link" href="{{ route('admin.posts.index') }}">
                     <i class="fas fa-list"></i> All Posts
                 </a>
@@ -260,14 +263,13 @@
                 </a>
             </div>
 
-            <div class="sidebar-parent"
-                 data-bs-toggle="collapse"
-                 data-bs-target="#menu-categories"
-                 aria-expanded="{{ Request::is('admin/categories*') ? 'true' : 'false' }}">
+            {{-- 3. Categories Dropdown Trigger --}}
+            <button class="sidebar-parent w-100 border-0 bg-transparent text-start"
+                    data-target="#menu-categories"
+                    aria-expanded="{{ Request::is('admin/categories*') ? 'true' : 'false' }}">
                 <i class="fas fa-tags"></i> Categories <i class="fas fa-chevron-down"></i>
-            </div>
-            <div class="collapse sidebar-submenu {{ Request::is('admin/categories*') ? 'show' : '' }}"
-                 id="menu-categories">
+            </button>
+            <div class="sidebar-submenu {{ Request::is('admin/categories*') ? 'show' : '' }}" id="menu-categories">
                 <a class="nav-link" href="{{ route('admin.categories.index') }}">
                     <i class="fas fa-list"></i> All Categories
                 </a>
@@ -276,14 +278,13 @@
                 </a>
             </div>
 
-            <div class="sidebar-parent"
-                 data-bs-toggle="collapse"
-                 data-bs-target="#menu-media"
-                 aria-expanded="{{ Request::is('admin/medias*') ? 'true' : 'false' }}">
+            {{-- 4. Media Dropdown Trigger --}}
+            <button class="sidebar-parent w-100 border-0 bg-transparent text-start"
+                    data-target="#menu-media"
+                    aria-expanded="{{ Request::is('admin/medias*') ? 'true' : 'false' }}">
                 <i class="fas fa-photo-film"></i> Media <i class="fas fa-chevron-down"></i>
-            </div>
-            <div class="collapse sidebar-submenu {{ Request::is('admin/medias*') ? 'show' : '' }}"
-                 id="menu-media">
+            </button>
+            <div class="sidebar-submenu {{ Request::is('admin/medias*') ? 'show' : '' }}" id="menu-media">
                 <a class="nav-link" href="{{ route('admin.medias.index') }}">
                     <i class="fas fa-list"></i> All Media
                 </a>
@@ -315,7 +316,7 @@
                             {{ Auth::check() && isset(Auth::user()->name) ? Auth::user()->name : 'Admin User' }}
                         </span>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
+                    <ul class="dropdown-menu dropdown-menu-end" id="userDropdownMenu">
                         @if(Auth::check())
                             <li>
                                 <a class="dropdown-item" href="/home">
@@ -362,15 +363,77 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    // Sidebar toggle wrapper script
-    document.getElementById('sidebarToggle').addEventListener('click', function () {
-        const sidebar = document.getElementById('sidebar-wrapper');
-        if (sidebar.style.width === '0px' || sidebar.style.width === '') {
-            sidebar.style.width = sidebar.dataset.width || '250px';
-        } else {
-            sidebar.dataset.width = sidebar.style.width || '250px';
-            sidebar.style.width = '0px';
+    document.addEventListener('DOMContentLoaded', function () {
+        
+        // 1. Main Sidebar Left/Right panel toggle script
+        document.getElementById('sidebarToggle').addEventListener('click', function () {
+            const sidebar = document.getElementById('sidebar-wrapper');
+            if (sidebar.style.width === '0px' || sidebar.style.width === '') {
+                sidebar.style.width = sidebar.dataset.width || '250px';
+            } else {
+                sidebar.dataset.width = sidebar.style.width || '250px';
+                sidebar.style.width = '0px';
+            }
+        });
+
+        // 2. Custom clean sub-menu interaction controller
+        const subMenuButtons = document.querySelectorAll('.sidebar-parent');
+
+subMenuButtons.forEach(button => {
+    button.addEventListener('click', function (e) {
+        e.preventDefault();
+        
+        const targetId = this.getAttribute('data-target');
+        const targetMenu = document.querySelector(targetId);
+        
+        if (targetMenu) {
+            const isOpen = targetMenu.classList.contains('show');
+            
+            // If we are opening a menu, close all OTHER open menus first
+            if (!isOpen) {
+                subMenuButtons.forEach(otherButton => {
+                    const otherTargetId = otherButton.getAttribute('data-target');
+                    const otherMenu = document.querySelector(otherTargetId);
+                    
+                    if (otherMenu && otherMenu !== targetMenu) {
+                        otherMenu.classList.remove('show');
+                        otherButton.setAttribute('aria-expanded', 'false');
+                    }
+                });
+                
+                // Now open the clicked menu
+                targetMenu.classList.add('show');
+                this.setAttribute('aria-expanded', 'true');
+            } else {
+                // If it was already open, just close it
+                targetMenu.classList.remove('show');
+                this.setAttribute('aria-expanded', 'false');
+            }
         }
+    });
+});
+
+// 3. Custom Top-Bar Dropdown Controller
+const dropdownToggle = document.querySelector('.dropdown-toggle');
+const dropdownMenu = document.getElementById('userDropdownMenu');
+
+if (dropdownToggle && dropdownMenu) {
+    dropdownToggle.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation(); // Prevents the click from closing the menu immediately
+        
+        // Toggle the 'show' class to display/hide the menu
+        dropdownMenu.classList.toggle('show');
+    });
+
+    // Close menu when clicking anywhere else on the page
+    document.addEventListener('click', function (e) {
+        if (!dropdownToggle.contains(e.target)) {
+            dropdownMenu.classList.remove('show');
+        }
+    });
+}
+
     });
 </script>
 

@@ -15,7 +15,7 @@ class AdminMediasController extends Controller
         //
         $photos = Photo::all();
 
-        return view('admin.media.index', compact('photos'));
+        return view('admin.medias.index', compact('photos'));
     }
 
     /**
@@ -26,7 +26,7 @@ class AdminMediasController extends Controller
         //
 
 
-        return view('admin.media.create');
+        return view('admin.medias.create');
     }
 
     /**

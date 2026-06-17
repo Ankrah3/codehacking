@@ -87,5 +87,29 @@
         @include('includes.form_error')
     </div>
     
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const passwordInput = document.querySelector('#password');
+            const toggleButton = document.querySelector('.toggle-password');
+            const icon = toggleButton.querySelector('i');
 
+            toggleButton.addEventListener('click', function () {
+                // Toggle the HTML type attribute
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    
+                    // Switch icon to "eye-slash" if you are using Bootstrap Icons
+                    icon.classList.remove('bi-eye');
+                    icon.classList.add('bi-eye-slash');
+                } else {
+                    passwordInput.type = 'password';
+                    
+                    // Switch back to regular eye icon
+                    icon.classList.remove('bi-eye-slash');
+                    icon.classList.add('bi-eye');
+                }
+            });
+        });
+    </script>
 @stop
+

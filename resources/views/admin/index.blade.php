@@ -86,7 +86,7 @@
                     <hr class="my-4 text-black-50">
                     <div class="d-flex gap-2">
                         <a href="{{ route('admin.posts.create') }}" class="btn btn-outline-primary">
-                            <i class="fas fa-plus me-1"></i> Write New Post
+                            <i class="fas fa-plus me-1"></i> Create New Post
                         </a>
                         <a href="{{ route('admin.medias.create') }}" class="btn btn-outline-success">
                             <i class="fas fa-upload me-1"></i> Upload Assets
